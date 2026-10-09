@@ -1,0 +1,1176 @@
+﻿Flow Name,Flow Type,Flow Work,Details Explain working,Technical Working
+Asset Request Approval,Automated,"Processes asset request approvals, updates approval status, and notifies the requester.","1.Trigger: The flow starts when a new item is created in your SharePoint list. 2.Team Members: It lists team members and processes the item data. 3.Teams Groups: Retrieves Teams group configurations and filters for admin and user groups. 4.User Profile: Gets the profile of the item’s author. 5.Adaptive Card: Posts an approval card in Teams for action (Approve/Reject). 6.Approval Logic: Based on the response, updates the item status and notifies users in Teams.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint connector, ""When an item is created"". The flow instance starts only for a new list item. That item is the asset request record for the rest of the run.
+
+2. Team members
+The flow lists team members and processes the new item data. This builds the people context used later for the approval card and notifications.
+
+3. Teams groups
+It retrieves the Teams group configuration and filters that configuration to the admin group and the user group. Only those two filtered groups are used downstream.
+
+4. User profile
+It gets the profile of the item author. The author is the requester whose profile is used when the approval is posted and when users are notified.
+
+5. Adaptive card
+It posts an approval adaptive card in Microsoft Teams. The card actions exposed to the approver are Approve and Reject.
+
+6. Approval logic
+The flow waits on the card response, then branches on that response:
+- It updates the SharePoint item approval status to match Approve or Reject.
+- It notifies users in Teams of the outcome.
+
+Result
+The asset request item status is updated and the requester side is notified in Teams. No schedule is involved; each new item is one run."
+Metting Add new User,Automated,Automatically adds a new user to a meeting and sends the required notifications.,1.Trigger: Starts when a SharePoint item is created or modified and has participants. 2.Initialize Variables: Sets up arrays for old/new participants and other helper variables. 3.Fetch Changes: Gets the latest and previous versions of the item to compare participant lists. 4.Compare Participants: Identifies new participants by comparing old and new lists. 5.User Lookup: Retrieves user details from another SharePoint list. 6.Teams Notification: Posts adaptive cards in Teams chats/channels to alert about meetings. 7.Update Records: Updates SharePoint with meeting and time details.,"Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item is created or modified"", with a participant condition. A run starts only when the meeting item has participants.
+
+2. Initialize variables
+Arrays are initialized for the old participant list and the new participant list, plus helper variables used while the two lists are compared.
+
+3. Fetch changes
+The flow reads the latest version and the previous version of the same SharePoint item. Those two versions are the inputs for the participant diff.
+
+4. Compare participants
+Old and new participant lists are compared. The difference is the set of newly added participants. Existing participants are not treated as new.
+
+5. User lookup
+For the new participants, user details are read from a second SharePoint list.
+
+6. Teams notification
+Adaptive cards are posted in Teams chats or channels to alert those users about the meeting.
+
+7. Update records
+The SharePoint meeting item is updated with the meeting details and the time details after the participant change is processed.
+
+Result
+A created or modified meeting item that gained participants produces a user lookup, a Teams alert, and an updated SharePoint meeting/time record."
+Attendance Report HHHH,Scheduled,Generates HHHH employee attendance details in table format and identifies employees who are on leave.,"Trigger: The flow starts on a daily schedule (recurrence) at 12 PM India Standard Time.
+Main Purpose: It generates an attendance report for the HHHH team, including leave and availability details for various teams and employees.
+Data Sources: It pulls data from SharePoint lists (Leave Request, Contacts, Employees).
+Processing: The flow filters, matches, and counts employees, calculates leave statistics, and builds an HTML report.
+Output: The report is posted in a Microsoft Teams group chat.","Technical runtime path (Scheduled)
+
+1. Trigger
+Recurrence daily at 12:00 PM India Standard Time. One run covers the HHHH attendance report for that day.
+
+2. Data sources
+Three SharePoint lists are read:
+- Leave Request
+- Contacts
+- Employees
+
+3. Processing
+The flow filters the retrieved rows, matches employees across the lists, and counts them. Leave statistics are calculated from the matched Leave Request data. Availability is derived for the teams and employees included in the report.
+
+4. Report build
+The matched counts, leave statistics, and availability details are rendered as an HTML report in table form.
+
+5. Output
+The HTML report is posted to a Microsoft Teams group chat.
+
+Result
+The HHHH group chat receives the daily attendance table, including who is on leave and who is available. The flow does not update the Leave Request or Employees lists; it reads them and publishes the report."
+LateloginCountReport,Scheduled,Generates a report of employees who logged in late.,"Trigger: The flow starts daily at 12:01 PM IST.
+SharePoint Data: It retrieves employee attendance data from SharePoint.
+Processing: Filters employees who spent more time and those with late logins.
+Variables: Stores day, date, and late login counts.
+Reporting: Builds a late login report table.
+Notification: Posts the report in a Teams group chat, except on weekends.","Technical runtime path (Scheduled)
+
+1. Trigger
+Recurrence daily at 12:01 PM IST.
+
+2. SharePoint read
+Employee attendance rows are retrieved from SharePoint. This is the only data source described for the report.
+
+3. Filter
+Two subsets are produced from that attendance data:
+- employees who spent more time
+- employees with late logins
+
+4. Variables
+Day, date, and the late-login counts are stored in variables and used as the report header and totals.
+
+5. Report table
+A late-login report table is built from the filtered rows and the count variables.
+
+6. Notification rule
+The table is posted to a Teams group chat. The post is skipped on weekends.
+
+Result
+On a weekday the Teams group chat gets the late-login table with day, date, and counts. On Saturday and Sunday the flow does not post."
+Metting remainder,Scheduled,Sends automated meeting reminder notifications.,"1.Trigger: Runs daily at 10:10 AM IST. 2.Get_items: Retrieves meeting data from SharePoint for the current day. 3.Apply_to_each: Processes each meeting item:
+
+Extracts participants.
+Filters relevant Teams groups.
+For each group member, checks if they are a participant.
+Posts an adaptive card in Teams group chat with meeting details. 4.Handles participant lists: Formats and displays participant names. 5.Manages meeting info: Shows/hides details and provides links to join or view meetings.","Technical runtime path (Scheduled)
+
+1. Trigger
+Recurrence daily at 10:10 AM IST.
+
+2. Get_items
+Meeting items for the current day are read from SharePoint. Only that day's meetings enter the loop.
+
+3. Apply to each meeting
+For every meeting item the flow:
+- extracts the participant list
+- filters the Teams groups that are relevant to that meeting
+- for each member of those groups, checks whether that member is a participant
+- posts an adaptive card in the Teams group chat with the meeting details
+
+4. Participant list handling
+Participant names are formatted and displayed on the card.
+
+5. Meeting info handling
+The card shows or hides meeting details and includes links to join the meeting or to view the meeting.
+
+Result
+Each current-day meeting produces a Teams reminder card for the participants found inside the filtered groups, with join and view links."
+Today's Leave Report Daily,Scheduled,Generates a daily report showing employees who are on leave.,"Trigger: The flow starts daily at 1 PM IST.
+Employee Data: It initializes variables and fetches employee and leave data from SharePoint.
+Processing: It matches leave requests with employee details, filters for today’s leaves, and prepares a formatted HTML table.
+Condition: If it’s a weekday and there are leaves, it posts the leave report to a Teams group chat.
+Output: If no leaves, it shows a “No leaves today” message.","Technical runtime path (Scheduled)
+
+1. Trigger
+Recurrence daily at 1:00 PM IST.
+
+2. Employee and leave data
+Variables are initialized. Employee data and leave data are then fetched from SharePoint.
+
+3. Match and filter
+Each leave request is matched to an employee record. The matched set is filtered to leaves that apply today. Other dates are dropped before the table is built.
+
+4. HTML table
+The remaining rows are formatted into an HTML table.
+
+5. Post condition
+The table is posted to a Teams group chat only when both are true:
+- the day is a weekday
+- at least one leave remains after the filter
+
+6. Empty result
+When there are no leaves, the output message is ""No leaves today"".
+
+Result
+Weekday Teams chat shows either the today's-leave table or the no-leaves message. The flow reads leave and employee data; it does not approve or reject the leave request."
+ ,Scheduled,Synchronizes and updates Microsoft Teams group and member information.,"Trigger: Recurrence (runs daily at 11:00 and 15:00 IST)
+Actions:
+Initializes variables for request URL, arrays, and group data.
+Uses Microsoft Graph API to fetch chat groups.
+Filters and stores relevant group chats.
+Loops through each group to list members.
+Stores group details and members in an array.
+Updates or creates a SharePoint item with group configurations.","Technical runtime path (Scheduled). The Flow Name cell in the source file is blank; the behavior below is taken from Flow Work and Details Explain working.
+
+1. Trigger
+Recurrence twice a day, at 11:00 IST and 15:00 IST.
+
+2. Initialize
+Variables are initialized for the request URL, for arrays, and for group data. These hold the Graph response and the member payload before anything is written to SharePoint.
+
+3. Microsoft Graph
+The flow calls Microsoft Graph to fetch chat groups.
+
+4. Filter
+The returned chats are filtered and the relevant group chats are stored.
+
+5. Member loop
+For each stored group, the flow lists the members of that group.
+
+6. Accumulate
+Group details and the member list are stored together in an array.
+
+7. SharePoint write
+For the group configuration, the flow updates the existing SharePoint item or creates a new SharePoint item.
+
+Result
+Teams group membership is synced into SharePoint group-configuration items twice a day. The flow does not post a Teams message."
+Clients Leave Report,Automated,"Automatically generates and processes the client leave report, including employee leave details and leave status.","Compose: Takes the trigger body and prepares it for further actions. 2.Parse_JSON: Runs after Compose, extracting ""html"", ""reportPreset"", and ""generatedAt"" from the composed data. 3.Initialize_variable: Runs after Parse_JSON, initializing a string variable called ""leaveRows"". 4.Post_message_in_a_chat_or_channel: Runs after Initialize_variable, posting a message to a Microsoft Teams group chat using the parsed HTML content.","Technical runtime path (Automated)
+
+Action order is fixed by run-after dependencies.
+
+1. Compose
+The trigger body is taken as-is and prepared for the following actions. The report HTML is expected to already be inside that body. This flow does not query the Leave Request list in the documented steps.
+
+2. Parse JSON
+Runs after Compose. Three properties are extracted:
+- html — the report markup
+- reportPreset — the preset that produced the report
+- generatedAt — the generation timestamp
+
+3. Initialize variable
+Runs after Parse JSON. A string variable named leaveRows is initialized.
+
+4. Post message in a chat or channel
+Runs after the variable is initialized. The parsed html value is posted to a Microsoft Teams group chat.
+
+Result
+The client leave report, including employee leave details and leave status carried in html, is published to the Teams group chat. leaveRows is initialized in this path; the posted content is the parsed html."
+Parent Sp PXC Family,Automated,Synchronizes Parent SP PXC Family information.,"Trigger: The flow starts when an item is created or modified in your SharePoint list, filtered by specific conditions (PercentComplete between 0.05 and 0.9, TaskType is 'Task').
+Main Actions: It checks for changes, gathers related project, sprint, and cycle data, and builds arrays for processing.
+Processing: The flow loops through tasks and projects, updates items based on their status, and manages variables for tracking progress.
+Purpose: It automates task and project updates, ensuring data consistency and workflow efficiency.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item is created or modified"", with a trigger filter:
+- PercentComplete is between 0.05 and 0.9
+- TaskType is 'Task'
+Items outside that range or with a different task type do not start the flow.
+
+2. Change check and related data
+The flow checks what changed on the item, then gathers the related project, sprint, and cycle data. Those related records are placed into arrays for processing.
+
+3. Loop
+The flow loops tasks and projects. Inside the loop, items are updated according to their status. Variables are updated to track progress as each item is processed.
+
+Result
+Parent SP PXC Family task and project records stay consistent: only in-progress Task items (5% to 90% complete) cause related project, sprint, and cycle data to be recalculated and written back."
+All Task List- Child Scalablel Project Family 2,Instant,Retrieves and processes tasks related to the Child Scalable Project Family 2.,"The flow starts with a manual button trigger.
+It processes incoming task and project data using Compose and Initialize Variable actions.
+Several conditions check the type of item (Project, Sprint, Cycle, Workstream) and the task’s completion status.
+Based on these checks, the flow queries, filters, and appends relevant data to array variables like ""Update PXC"" and ""Update Task.""
+It updates variables to track project and cycle information.
+At the end, the flow sends a response with the updated arrays and project details.","Technical runtime path (Instant / manual)
+
+1. Trigger
+Manual button. The flow receives the task and project payload for Child Scalable Project Family 2.
+
+2. Compose and Initialize variable
+Incoming task and project data is shaped with Compose actions, and working variables are initialized before the type checks.
+
+3. Type and status conditions
+Conditions classify the item as Project, Sprint, Cycle, or Workstream, and also check the task completion status. Each branch decides whether that item is queried further.
+
+4. Query, filter, append
+Matching data is queried, filtered, and appended to array variables. The documented array names are ""Update PXC"" and ""Update Task"". Separate variables track project information and cycle information.
+
+5. Response
+The flow returns a response that contains the updated arrays and the project details.
+
+Result
+A button run returns the filtered PXC and task arrays for Child Scalable Project Family 2. It responds to the caller; it does not post to Teams in the documented steps."
+OMT Question and Rejection,Automated,Processes OMT questions and rejection requests and updates the related workflow status.,"Trigger: The flow starts manually via an HTTP request.
+User & Task Initialization: It initializes variables for users and tasks.
+Task Binding: Tasks are processed and formatted into a table.
+Teams Group Retrieval: It fetches Teams group configurations from SharePoint.
+Group Filtering: Filters for the ""OMT Notifications group.""
+Group Processing: For each group, it processes members, filters users, and posts adaptive cards to Teams group chats.
+Condition Check: If no group exists, it creates a new Teams group and posts a card.","Technical runtime path (Automated, HTTP start)
+
+1. Trigger
+HTTP request. The body carries the OMT question or rejection request.
+
+2. User and task initialization
+Variables for users and for tasks are initialized before any Teams post.
+
+3. Task binding
+The tasks in the request are processed and formatted into a table. That table is the content later shown on the adaptive card.
+
+4. Teams group retrieval
+Teams group configuration is read from SharePoint.
+
+5. Group filter
+The configuration is filtered to the group named ""OMT Notifications group"".
+
+6. Group processing
+For each matching group, the flow processes members, filters the users, and posts adaptive cards to the Teams group chats.
+
+7. Missing-group branch
+If no matching group exists, the flow creates a new Teams group and posts the card there.
+
+Result
+The OMT question or rejection is turned into a task table, delivered as an adaptive card to the OMT Notifications group, and the related workflow status is updated. If the group is missing, it is created in the same run."
+Task Action Flow,Scheduled,Runs scheduled task actions and processes pending task operations.,"Trigger: The flow starts on a daily recurrence (every day at 1:10 AM GMT).
+Data Preparation: It calculates the current and tomorrow’s date, and sets up the SharePoint list name.
+Get Data: Retrieves items from the SharePoint ""Task Actions"" list filtered by date and action type.
+Process Data: For each item:
+Checks if the task date matches today.
+Gets Teams group info and filters for the ""Task Actions"" group.
+For each group member, checks if their email matches the tagged user.
+If yes, posts a Teams message, updates a variable, fetches task details, and deletes the item from SharePoint.
+If no group exists, creates a new Teams group, posts a message, fetches task details, and deletes the item.
+Variables: Uses variables to track if a group exists.","Technical runtime path (Scheduled)
+
+1. Trigger
+Recurrence every day at 1:10 AM GMT.
+
+2. Data preparation
+The flow calculates today's date and tomorrow's date, and sets the SharePoint list name used for the rest of the run.
+
+3. Get data
+Items are read from the SharePoint list ""Task Actions"", filtered by date and by action type.
+
+4. Per item
+Apply to each Task Actions item:
+- Compare the task date with today. Only today's items continue.
+- Read Teams group info and filter to the group named ""Task Actions"".
+- For each member of that group, compare the member email with the tagged user on the item.
+- If the email matches: post a Teams message, update the tracking variable, fetch the task details, and delete the Task Actions item from SharePoint.
+- If no Task Actions group exists: create a new Teams group, post the message, fetch the task details, and delete the SharePoint item.
+
+5. Group-exists variable
+A variable records whether the Task Actions group was found, and that flag selects the post path versus the create-group path.
+
+Result
+Pending Task Actions due today are delivered to the tagged user in Teams and then removed from the Task Actions list so the same item is not processed again."
+LoginHoursShorts,Scheduled,Generates a report for employees with short login hours.,"The flow is triggered daily at 12:00 PM IST.
+It retrieves items from a SharePoint list, filtering by date.
+Data is transformed and filtered to identify employees with short login hours and late logins.
+Two HTML tables are built: one for login hour shortages and one for late logins.
+If there’s no data, a “No data available for today” row is added.
+On weekdays, the tables are posted to a Microsoft Teams group chat.","Technical runtime path (Scheduled)
+
+1. Trigger
+Recurrence daily at 12:00 PM IST.
+
+2. Get items
+SharePoint list items are retrieved with a date filter so the run is limited to the current report date.
+
+3. Transform and filter
+The rows are transformed, then split into:
+- employees with short login hours
+- employees with late logins
+
+4. Two HTML tables
+One HTML table is built for login-hour shortages. A second HTML table is built for late logins.
+
+5. Empty-table rule
+If either set has no rows, a row with the text ""No data available for today"" is added to that table.
+
+6. Weekday post
+Both tables are posted to a Microsoft Teams group chat only on weekdays.
+
+Result
+On a weekday the Teams chat receives the short-hours table and the late-login table. An empty category still posts a table that contains the no-data row."
+HHHH Meeting flows create task with time entry,Automated,Automatically creates HHHH tasks from meeting information and records the associated time entry.,"Trigger: Runs every 5 minutes when a new item is created in your SharePoint list.
+Initialization: Sets up variables for users, time tracking, and arrays.
+Processing:
+Retrieves teams/groups and user details.
+Creates and updates SharePoint items for meetings and tasks.
+Filters participants and handles group membership.
+Notifications: Posts adaptive cards to Microsoft Teams chats/channels for meeting alerts.
+Conditions & Loops: Uses conditions and loops to process participants, update time entries, and manage group notifications.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When a new item is created"". The trigger is configured to check every 5 minutes, so a new meeting item is picked up on that polling interval.
+
+2. Initialization
+Variables are set for users, for time tracking, and for the arrays used while participants and groups are processed.
+
+3. Processing
+- Teams/groups and user details are retrieved.
+- SharePoint items are created and updated for the meeting and for the task.
+- Participants are filtered and group membership is handled.
+
+4. Notifications
+Adaptive cards are posted to Microsoft Teams chats or channels as the meeting alert.
+
+5. Conditions and loops
+Conditions and Apply to each loops walk the participants, update the time entries, and send the group notifications.
+
+Result
+A new HHHH meeting item becomes a SharePoint task plus a time entry, and the participants are notified in Teams."
+WT process on teams,Scheduled,Runs the scheduled WT process and processes the required information in Microsoft Teams.,"Trigger: Runs monthly, starting July 1, 2026.
+User Data: Gets all users from SharePoint, processes them, and builds a filter.
+Time Entries: Retrieves time entries for those users, parses and filters them for today.
+Tasks & Projects: Gets tasks and projects, groups them by type (Project, Sprint, Cycle).
+Grouping: Projects are grouped, and related tasks are organized.
+Variables: Uses array variables to store grouped data.","Technical runtime path (Scheduled)
+
+1. Trigger
+Monthly recurrence. The documented start is 1 July 2026. Each run is the WT process for that cycle.
+
+2. User data
+All users are read from SharePoint, processed, and turned into a filter that limits the later time-entry query.
+
+3. Time entries
+Time entries for those users are retrieved, parsed, and filtered to today.
+
+4. Tasks and projects
+Tasks and projects are retrieved and grouped by type: Project, Sprint, and Cycle.
+
+5. Grouping
+Projects are grouped, and the tasks that belong to each project are organized under that group.
+
+6. Variables
+Array variables hold the grouped project, sprint, cycle, and task data for the rest of the WT process.
+
+Result
+The monthly WT run builds an in-memory grouping of today's time entries under Project, Sprint, and Cycle for the SharePoint user set. The documented steps stop at that grouped data."
+Metting Attendance Time,Automated,Processes meeting attendance and captures attendance duration/time.,"Trigger: When an item is created or modified in SharePoint, with conditions on attendance and JSON.
+Actions:
+Parse Attendance JSON (Compose).
+Initialize and set attendance variables.
+Get Task ID and send HTTP request to SharePoint for task details.
+Get all users and initialize ArrayTime.
+Loop through attendance array (Apply to each), check conditions, update or create items in SharePoint, and handle additional logic for time entries.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item is created or modified"". The trigger conditions require attendance data and valid JSON. Items that fail those conditions do not continue.
+
+2. Parse attendance JSON
+A Compose action parses the attendance JSON on the item into a structure the later steps can read.
+
+3. Attendance variables
+Attendance variables are initialized and then set from the parsed JSON.
+
+4. Task lookup
+The task id is taken from the item. An HTTP request is sent to SharePoint to get that task's details.
+
+5. Users and ArrayTime
+All users are retrieved. An array variable named ArrayTime is initialized to collect time values while the attendance rows are processed.
+
+6. Apply to each attendance row
+For each element in the attendance array the flow:
+- evaluates the row conditions
+- updates the existing SharePoint item or creates a new one
+- runs the additional time-entry logic for that row
+
+Result
+Meeting attendance duration is written onto SharePoint tasks and time entries. This flow does not post the daily attendance report; that report is a separate scheduled flow."
+Task Create,Instant,Creates a task instantly based on a user-triggered request.,"Trigger: Manual (Teams adaptive card for meeting creation)
+Actions:
+Compose: Gets the meeting title from the card.
+Compose_1: Gets the message body from Teams.
+Create_item: Adds a new item to SharePoint with meeting details, using outputs from Compose and Compose_1.","Technical runtime path (Instant)
+
+1. Trigger
+Manual. The run starts from a Teams adaptive card used for meeting creation. The card submission is the flow input.
+
+2. Compose
+Reads the meeting title from the adaptive card.
+
+3. Compose_1
+Reads the message body from Teams.
+
+4. Create item
+Creates a new SharePoint item. Meeting details on that item are set from the Compose output (title) and the Compose_1 output (message body).
+
+Result
+One card submission creates one SharePoint meeting item. No approval, no Teams post, and no time entry are documented after the create."
+Create New Meeting,Instant,Creates a new Microsoft Teams meeting instantly.,"Trigger: Manual (Teams message selected, asks for meeting title)
+Actions:
+Compose: Gets the meeting title from the Teams card.
+Compose_1: Extracts the message body from Teams.
+Create_item: Creates a SharePoint item with meeting details, using values from Compose and Compose_1.","Technical runtime path (Instant)
+
+1. Trigger
+Manual. The user selects a Teams message. The flow asks for the meeting title and starts from that input.
+
+2. Compose
+Reads the meeting title from the Teams card.
+
+3. Compose_1
+Extracts the message body from the selected Teams message.
+
+4. Create item
+Creates a SharePoint item and writes the meeting details from Compose (title) and Compose_1 (message body).
+
+Result
+The selected Teams message becomes a SharePoint meeting record titled from the card and described from the message body."
+Create meeting,Instant,Creates a Microsoft Teams meeting instantly and processes meeting information.,"Trigger: Manual (Teams Adaptive Card for meeting creation)
+Actions:
+Compose: Gets the meeting title from the card.
+Compose_1: Gets the message body from Teams.
+Create_item: Adds a new item to SharePoint with meeting details, using outputs from Compose_1.","Technical runtime path (Instant)
+
+1. Trigger
+Manual. Starts from the Teams adaptive card for meeting creation.
+
+2. Compose
+Reads the meeting title from the card.
+
+3. Compose_1
+Reads the message body from Teams.
+
+4. Create item
+Creates a SharePoint item for the meeting. The documented field mapping uses the output of Compose_1 (the message body). The title is read by Compose in the previous step.
+
+Result
+The adaptive card submission creates the SharePoint meeting item from the Teams message content."
+Update AssignTo,Instant,Updates the Assigned To user for the selected task or record.,"Trigger: The flow starts manually with a button.
+Action 1: Sends an HTTP request to SharePoint to get items assigned to ""Umang Kumar"" with specific filters.
+Action 2: For each item returned, the flow:
+Uses a ""Compose"" action to process the item.
+Updates the item in SharePoint using the ""Update item"" action.","Technical runtime path (Instant / manual button)
+
+1. Trigger
+Manual button. There is no SharePoint trigger and no schedule.
+
+2. HTTP request to SharePoint
+The flow gets items currently assigned to ""Umang Kumar"", using the filters configured on that request. Only items that match those filters are returned.
+
+3. Apply to each returned item
+- Compose processes the current item.
+- Update item writes the item back to SharePoint. This is the Assigned To change for that record.
+
+Result
+Every item returned for Umang Kumar under the request filters is updated in SharePoint. Items outside that filter are not touched."
+Copy of - ReArrange time bucket,Automated,Automatically rearranges or updates time-bucket information according to configured rules.,"Trigger: Starts when an item or file is modified in your SharePoint site.
+User & Task Data: Retrieves users and tasks, filters for specific users, and sorts tasks by priority.
+Task Processing: Loops through tasks, gathers time entries, and calculates hours.
+Category & Time Entry: For each task, fetches category info, creates time entries, and updates SharePoint lists.
+Variables: Uses variables to track totals, arrays, and status throughout the flow.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item or a file is modified"" on the site. A modification is the start event for rearranging time buckets.
+
+2. User and task data
+Users and tasks are retrieved. The task set is filtered to the specific users in scope, then sorted by priority. Priority order controls the sequence of the later loop.
+
+3. Task processing
+The flow loops the sorted tasks, gathers the time entries for each task, and calculates hours.
+
+4. Category and time entry
+For each task it fetches the category, creates the time-entry records required by the rearrangement, and updates the SharePoint lists.
+
+5. Variables
+Totals, arrays, and status are kept in variables across the loop so each task's hours roll into the running rearrangement.
+
+Result
+A SharePoint modification recalculates and rewrites time-bucket entries in priority order for the filtered users."
+HHHH Users working bucket,Automated,Processes HHHH users and updates their working-bucket information.,"Trigger: When an item is created or modified in your SharePoint list, the flow starts.
+Variables: Initializes variables for tracking total minutes, increments, and additional details.
+Get Changes: Retrieves changes for the item.
+Condition: Checks if certain columns have changed and if TaskArrangementMode is true.
+User & Category: Gets all users and categories, then processes each user.
+Nested Actions: For each user, checks conditions, fetches tasks, processes schedules, updates items, and manages variables.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item is created or modified"".
+
+2. Variables
+Total minutes, an increment variable, and additional details are initialized before any user is processed. These accumulate the working-bucket calculation.
+
+3. Get changes
+The flow retrieves the changes on the triggering item so it can see which columns actually changed.
+
+4. Condition gate
+The run continues only when the checked columns have changed and TaskArrangementMode is true. If TaskArrangementMode is not true, the working-bucket update does not proceed.
+
+5. Users and categories
+All users and all categories are retrieved.
+
+6. Nested per-user actions
+For each user the flow checks the user-level conditions, fetches that user's tasks, processes the schedule, updates the SharePoint items, and updates the running variables (minutes, increment, additional details).
+
+Result
+HHHH working buckets are recalculated only for a real column change while TaskArrangementMode is on. Each user's tasks and schedule are written back to SharePoint."
+Update Assigned to User in Task list,Instant,Instantly updates the Assigned To user in the HHHH Task list.,"Trigger: Manually triggered by a button.
+Action 1: Sends an HTTP request to SharePoint to get items filtered by PriorityRank, PercentComplete, and AssignedTo.
+Action 2: Uses ""Apply to each"" to loop through the SharePoint items.
+Action 3: Updates each item in SharePoint within the loop.","Technical runtime path (Instant / manual button)
+
+1. Trigger
+Manual button against the HHHH task list.
+
+2. HTTP request to SharePoint
+Items are retrieved with filters on:
+- PriorityRank
+- PercentComplete
+- AssignedTo
+Only rows that satisfy all three filters enter the loop.
+
+3. Apply to each
+The flow loops the HTTP response.
+
+4. Update item
+Inside the loop, each item is updated in SharePoint. The update changes the Assigned To user on that task.
+
+Result
+The filtered slice of the HHHH task list is reassigned in one button run. Unfiltered tasks are left unchanged."
+HHHHQA Users working bucket,Automated,Processes HHHH QA users and updates their working-bucket information.,"The flow is triggered when an item is created or modified in a SharePoint list.
+It initializes several variables (TotalMinutes, Incrementvariable, AdditionalDetails).
+It checks for changes in a specific item’s properties.
+If certain conditions are met, it retrieves users and categories, then processes each user.
+For each user, it fetches tasks, sends data to an external API, and processes the returned schedule.
+It updates SharePoint items with calculated and aggregated data.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item is created or modified"".
+
+2. Variables
+Three variables are initialized at the start:
+- TotalMinutes
+- Incrementvariable
+- AdditionalDetails
+
+3. Change detection
+The flow checks which properties changed on the triggering item.
+
+4. Condition
+If the documented conditions are met, users and categories are retrieved and each user is processed. If the conditions are not met, that user processing does not run.
+
+5. Per user
+For each user the flow:
+- fetches the user's tasks
+- sends that data to an external API
+- receives a schedule in the API response
+- processes the returned schedule
+
+6. SharePoint update
+SharePoint items are updated with the calculated and aggregated values (minutes and the additional details accumulated in the variables).
+
+Result
+HHHH QA working buckets are rebuilt from the external schedule API and written back to SharePoint after a qualifying item change."
+HHHHQA ReArrange time bucket,Automated,Automatically rearranges HHHH QA time-bucket information.,"Trigger: Starts when an item or file is modified in your SharePoint site.
+Actions: Retrieves changes, initializes variables, processes tasks, and manages time entries.
+Logic: Uses conditions and loops to handle task assignments, time tracking, and updates SharePoint lists.
+Purpose: Automates timesheet and task management, including user leave and approval checks.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item or a file is modified"" on the site.
+
+2. Changes and variables
+The flow retrieves the item changes and initializes the working variables used for the rearrangement.
+
+3. Tasks and time entries
+Tasks are processed and time entries are managed inside conditions and loops. The loops cover task assignment and time tracking, and they update the SharePoint lists.
+
+4. Leave and approval checks
+As part of the same timesheet and task update, the flow checks user leave and approval. Those checks sit inside this rearrangement; they are not a separate leave-report flow.
+
+Result
+An item or file modification rearranges HHHH QA time buckets, updates timesheet and task rows, and applies the user leave and approval checks before the SharePoint lists are left in the new arrangement."
+User working bucket,Scheduled,Runs on a schedule to process users and update their working-bucket information.,"The flow is triggered on a monthly schedule.
+It retrieves all users from SharePoint, then filters .
+It gets the user’s email and fetches SharePoint list items assigned to with specific criteria.
+The flow processes and sorts these items, selects the top 10, and sends them to an external HTTP endpoint.
+The response is processed in a loop, updating SharePoint items and variables as needed.","Technical runtime path (Scheduled)
+
+1. Trigger
+Monthly recurrence.
+
+2. Users
+All users are retrieved from SharePoint and then filtered. The documented filter text does not name the filter field.
+
+3. Email and assigned items
+The flow gets the user's email and fetches SharePoint list items assigned to that user, using the specific criteria on the Get items action.
+
+4. Sort and top 10
+The assigned items are processed, sorted, and reduced to the top 10.
+
+5. External HTTP
+Those top 10 items are sent to an external HTTP endpoint.
+
+6. Response loop
+The HTTP response is processed in a loop. Each iteration updates SharePoint items and the flow variables.
+
+Result
+Once a month, each filtered user's top 10 assigned items are sent out for scheduling and the response is written back to SharePoint."
+HHHHQA Meeting flows create task with time entry,Automated,Automatically creates HHHH QA tasks from meeting information and records the related time entry.,"Trigger: Starts when a new item is created in SharePoint (checks every 5 minutes).
+Actions:
+Initializes variables for users and time tracking.
+Retrieves users and teams/groups from SharePoint.
+Processes participants and groups using ""Apply to each"" loops.
+Posts adaptive cards to Teams chats/channels.
+Updates SharePoint items with task and time details.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When a new item is created"". The trigger checks every 5 minutes.
+
+2. Initialize
+Variables for users and for time tracking are initialized.
+
+3. Retrieve
+Users and teams/groups are read from SharePoint.
+
+4. Apply to each
+Participants and groups are processed in Apply to each loops.
+
+5. Teams notification
+Adaptive cards are posted to Teams chats or channels for the meeting.
+
+6. SharePoint update
+SharePoint items are updated with the task details and the time-entry details.
+
+Result
+A new HHHH QA meeting item becomes a task and a time entry, and the participants receive an adaptive card in Teams."
+Teams Presence Tracker ST,Scheduled,Tracks and updates Teams presence information on a scheduled basis.,"Trigger: Runs every minute (Recurrence).
+Compose: Starts the flow.
+HTTP: Gets an access token from Azure AD.
+HTTP_1: Uses the token to check a specific user's Microsoft Teams presence.
+Get_items: Retrieves items from a SharePoint list.
+Filter_array: Filters SharePoint items for the user.
+Condition:
+If user exists in SharePoint and status matches, deletes the item.
+Else, if user is ""InACall"", creates a new item, starts a Teams chat, and posts a message.","Technical runtime path (Scheduled, every minute)
+
+1. Trigger
+Recurrence every 1 minute.
+
+2. Compose
+A Compose action starts the data path for the run.
+
+3. HTTP — token
+An HTTP request gets an access token from Azure AD. Later Graph/Teams calls use this token.
+
+4. HTTP_1 — presence
+The token is used to read one specific user's Microsoft Teams presence.
+
+5. Get items
+Items are read from a SharePoint list.
+
+6. Filter array
+The SharePoint items are filtered to the same user whose presence was just read.
+
+7. Condition
+- If the user already exists in SharePoint and the stored status matches the current presence, the SharePoint item is deleted.
+- Else, if the presence is ""InACall"", the flow creates a new SharePoint item, starts a Teams chat, and posts a message.
+
+Result
+Every minute the specific user's Teams presence is compared with SharePoint. A matching existing row is removed. An InACall state with no matching row creates an item and posts a Teams chat message."
+Teams Presence Tracker DT,Scheduled,Tracks Teams presence information and processes the required tracking data.,"Trigger: Runs every 1 minute (Recurrence).
+Step 1: Compose action (simple data operation).
+Step 2: HTTP POST to get a Microsoft Graph access token.
+Step 3: HTTP GET to retrieve a user’s presence from Microsoft Graph.
+Step 4: Get items from a SharePoint list.
+Step 5: Filter array to match SharePoint items with the user.
+Step 6: Condition checks if any items exist:
+If yes: Checks if the user’s status matches; if not, deletes the item.
+If no: Checks if the user is ""InACall""; if yes, creates a new item, starts a Teams chat, and posts a message.","Technical runtime path (Scheduled, every minute)
+
+1. Trigger
+Recurrence every 1 minute.
+
+2. Compose
+A Compose action performs the opening data operation.
+
+3. HTTP POST
+An HTTP POST requests a Microsoft Graph access token.
+
+4. HTTP GET
+An HTTP GET calls Microsoft Graph and returns the user's presence.
+
+5. Get items
+Items are read from a SharePoint list.
+
+6. Filter array
+The SharePoint items are filtered to the user whose presence was returned.
+
+7. Condition on filtered items
+- If items exist: the flow checks whether the user's status matches. If the status does not match, the item is deleted.
+- If no items exist: the flow checks whether the user is ""InACall"". If yes, it creates a new SharePoint item, starts a Teams chat, and posts a message.
+
+Result
+Every minute, Graph presence is reconciled with SharePoint. A status mismatch deletes the existing item. A new InACall presence creates the item and notifies Teams."
+Task Actions Trigger,Automated,Triggers task-related actions automatically when configured task conditions are met.,"Trigger: When an item is created or modified in SharePoint (checks every 3 minutes).
+Main Actions:
+Composes the current item.
+Initializes a variable to track group exit.
+Runs a scope (""Try"") with date-based conditions.
+Checks if the item’s date matches today.
+Filters and processes Teams groups and members.
+Sends HTTP requests to SharePoint and posts adaptive cards to Teams.
+Handles group creation if needed.
+Error Handling: A ""Catch"" scope filters failed actions and posts error details to Teams.","Technical runtime path (Automated)
+
+1. Trigger
+SharePoint ""When an item is created or modified"". The trigger checks every 3 minutes.
+
+2. Compose
+The current item is composed so later conditions read a single payload.
+
+3. Group-exit variable
+A variable is initialized to track whether the run should exit the group processing.
+
+4. Try scope
+A scope named ""Try"" holds the date conditions and the Teams work:
+- The item date is compared with today.
+- Teams groups and members are filtered and processed.
+- HTTP requests are sent to SharePoint.
+- Adaptive cards are posted to Teams.
+- If the required group does not exist, the flow creates it.
+
+5. Catch scope
+A scope named ""Catch"" runs when the Try scope fails. It filters the failed actions and posts the error details to Teams.
+
+Result
+A Task Actions item created or modified on today's date posts an adaptive card to the Teams group, with SharePoint HTTP calls inside the Try scope. Failures are reported to Teams by the Catch scope instead of failing silently."
+OMT Notification Teams,Automated,Sends OMT notifications to relevant Microsoft Teams users or channels.,"Trigger: Manual HTTP request (POST).
+Get Teams Groups: Retrieves Teams group info from SharePoint.
+Filter Groups: Filters for ""OMT Notifications group"".
+Open Link: Generates a SharePoint link for the user.
+Apply to Each Group: Loops through filtered groups, then through each group’s members.
+Condition: Checks if filtered array has members, sets variables, and posts adaptive cards to Teams.
+Check Group Condition: If user array has members, creates new Teams group, posts adaptive card.
+Task Table: Initializes and binds task rows for display.","Technical runtime path (Automated, HTTP POST)
+
+1. Trigger
+Manual HTTP POST. The request body is the OMT notification payload.
+
+2. Get Teams groups
+Teams group information is read from SharePoint.
+
+3. Filter groups
+Groups are filtered to the name ""OMT Notifications group"".
+
+4. Open link
+A SharePoint link is generated for the user. That link is available to the adaptive card.
+
+5. Apply to each group, then each member
+The flow loops the filtered groups and, inside that, loops each group's members.
+
+6. Member condition
+If the filtered member array has members, variables are set and adaptive cards are posted to Teams.
+
+7. Group condition
+If the user array has members, the flow creates a new Teams group and posts an adaptive card.
+
+8. Task table
+A task-table variable is initialized and task rows are bound for display on the notification.
+
+Result
+The HTTP caller causes an OMT adaptive card, including the task table and the SharePoint link, to be posted to the OMT Notifications group. A missing group is created when the user array has members."
+Today_EOD_Report_Sent_Clients,Automated,Generates and sends the end-of-day report to clients with the required daily project information.,"1.Trigger: The flow starts with a manual HTTP request. 2.Compose & Parse JSON: It processes the incoming data and parses it into a structured format. 3.Initialize Variables: Sets up variables for report text, card body, and task items. 4.Apply to Each Project: Loops through up to 6 projects, checks if the project title exists, and processes each project’s tasks. 5.Build Adaptive Card: Constructs an adaptive card body with project and task details. 6.Post to Teams: Posts the final adaptive card in a Teams group chat.","Technical runtime path (Automated, HTTP)
+
+1. Trigger
+Manual HTTP request. The body contains the end-of-day project payload, including up to 6 projects.
+
+2. Compose and Parse JSON
+The incoming body is composed and parsed into a structured object the later loops can index.
+
+3. Initialize variables
+Variables are initialized for:
+- report text
+- card body
+- task items
+
+4. Apply to each project
+The flow loops up to 6 projects. For each project it checks that the project title exists, then processes that project's tasks into the card data.
+
+5. Build adaptive card
+The adaptive card body is constructed from the project and task details accumulated in the variables.
+
+6. Post to Teams
+The finished adaptive card is posted in a Teams group chat.
+
+Result
+One HTTP call publishes the client end-of-day report as a Teams adaptive card covering the projects that have a title, up to 6 projects."
+WT_Report_AI_Summaries_Report_Clients,Automated,Generates WT report summaries using AI and sends the summarized report to clients.,"Trigger: Manual HTTP request starts the flow.
+Compose: Captures the trigger body.
+Initialize Variable: Sets up an array variable called CardBody.
+Apply to Each: Loops through up to 15 project summary objects, appending formatted data to CardBody.
+Final Adaptive Card: Builds an Adaptive Card JSON with project summaries and a link to the full report.
+Post Card: Sends the Adaptive Card to a Microsoft Teams group chat.","Technical runtime path (Automated, HTTP)
+
+1. Trigger
+Manual HTTP request. The body contains the AI project summaries to send to clients.
+
+2. Compose
+The trigger body is captured for the loop.
+
+3. Initialize variable
+An array variable named CardBody is initialized. Each project summary is appended to this array.
+
+4. Apply to each
+The flow loops up to 15 project summary objects. Each object is formatted and appended to CardBody.
+
+5. Final adaptive card
+An Adaptive Card JSON document is built from CardBody. The card contains the project summaries and a link to the full report.
+
+6. Post card
+The Adaptive Card is sent to a Microsoft Teams group chat.
+
+Result
+Up to 15 AI project summaries are delivered to the client Teams chat as one adaptive card, with a link back to the full WT report."
+Copy of - Latest Teams Group Transcript flow,Automated,Processes the latest Teams group transcript and handles the configured transcript workflow.,"flow is triggered when a new chat message is added in Microsoft Teams. It then retrieves message details, checks for call recording events, processes group members, manages transcript files in OneDrive and SharePoint, and posts adaptive cards for user interaction. The flow also creates sharing links and sends messages to selected users, automating transcript sharing and access management for Teams call recordings.","Technical runtime path (Automated)
+
+1. Trigger
+Microsoft Teams ""When a new chat message is added"". The new message is the start payload.
+
+2. Message details
+The flow retrieves the details of that message.
+
+3. Call recording check
+It checks whether the message is a call-recording event. Transcript handling continues for recording events.
+
+4. Group members
+Group members are processed so the later share and notify steps have the recipient set.
+
+5. Transcript files
+Transcript files are managed in OneDrive and in SharePoint.
+
+6. Adaptive cards
+Adaptive cards are posted for user interaction around the transcript.
+
+7. Sharing links and messages
+The flow creates sharing links and sends messages to the selected users.
+
+Result
+A Teams call-recording chat message is turned into stored transcript files, sharing links, and adaptive-card messages so the selected users can access the recording transcript."
+EOD Project Teams group,Automated,Processes end-of-day project information for the project Teams group.,"Trigger: Manual HTTP request (starts the flow).
+Action 1: Posts a message in a Teams group chat with an EOD summary and a link to a report.
+Action 2: ""Apply to each"" loops through aiProjectSummaryObjects from the trigger body, ready for further actions inside the loop.","Technical runtime path (Automated, HTTP)
+
+1. Trigger
+Manual HTTP request. The body includes aiProjectSummaryObjects for the end-of-day project post.
+
+2. Post message
+A message is posted in a Teams group chat. The message contains the EOD summary and a link to the report.
+
+3. Apply to each
+The flow loops aiProjectSummaryObjects from the trigger body. The loop is the extension point for per-project actions. The documented step places each summary object into that loop.
+
+Result
+The project Teams group chat receives the EOD summary plus the report link, and each AI project summary object from the HTTP body is available inside the loop."
+AI Agent with Power automate,Instant,Allows an AI agent to invoke Power Automate actions instantly.,"Trigger: The flow starts when Copilot Studio calls it with user input text.
+Parse & Format: The input text is parsed as JSON to extract meeting details (date, time, title, participants).
+Condition: If a date is provided, it processes participants and creates a SharePoint item for the meeting.
+Else Branch: If no date, it fetches all users, creates a task, processes participants, and posts a message in Teams.
+Response: Returns a summary to Power Virtual Agents.","Technical runtime path (Instant, Copilot Studio / Power Virtual Agents)
+
+1. Trigger
+Copilot Studio calls the flow and passes the user input text.
+
+2. Parse and format
+The input text is parsed as JSON. Meeting fields are extracted:
+- date
+- time
+- title
+- participants
+
+3. Condition — date is provided
+If a date is present, the flow processes the participants and creates a SharePoint item for the meeting.
+
+4. Else branch — no date
+If no date is present, the flow:
+- fetches all users
+- creates a task
+- processes participants
+- posts a message in Teams
+
+5. Response
+A summary is returned to Power Virtual Agents so the agent can reply to the user.
+
+Result
+With a date, the agent call creates a SharePoint meeting. Without a date, it creates a task and posts to Teams. Both branches return a summary to the agent."
+ILF to HHHH cross site task creation,Automated,Automatically creates or synchronizes tasks from the ILF site to the HHHH site.,"Trigger: Manual HTTP request.
+Initialize_variable: Sets up an empty array variable called SiteTagging.
+GET_ILF_Items: Retrieves items from the SharePoint ILF list.
+Filter_array: Filters ILF items based on ComponentLink URL.
+Condition (If): Checks if the filtered array is empty.
+If true: Creates a new ILF item, adds an attachment, and sends a response with item details.
+If false: Sends a response indicating the item already exists.","Technical runtime path (Automated, HTTP)
+
+1. Trigger
+Manual HTTP request. This is the cross-site create from ILF toward HHHH.
+
+2. Initialize variable
+An empty array variable named SiteTagging is initialized.
+
+3. GET ILF items
+Items are retrieved from the SharePoint ILF list.
+
+4. Filter array
+The ILF items are filtered on the ComponentLink URL so the flow can see whether this component already exists.
+
+5. Condition
+The condition tests whether the filtered array is empty.
+- Empty (true): the item does not exist. The flow creates a new ILF item, adds an attachment, and sends a response that includes the new item details.
+- Not empty (false): the item already exists. The flow sends a response that says the item already exists and does not create a duplicate.
+
+Result
+The HTTP caller either receives the newly created ILF item or an already-exists response. Creation is gated on ComponentLink URL uniqueness."
+Copy of - ILF to HHHH cross site task creation1,Automated,Copy of the ILF-to-HHHH cross-site task creation workflow.,"Trigger: Manual HTTP request starts the flow.
+Initialize_variable: Sets up an empty array variable called SiteTagging.
+GET_ILF_Items: Retrieves items from the SharePoint ILF list.
+Filter_array: Filters ILF items based on ComponentLink URL.
+Condition: Checks if the filtered array is empty.
+If true: Creates a new item, adds an attachment, and sends a response.
+If false: Sends a response indicating the item already exists.
+","Technical runtime path (Automated, HTTP). This is the copy of the ILF-to-HHHH cross-site task creation flow. The documented steps match the original.
+
+1. Trigger
+Manual HTTP request.
+
+2. Initialize variable
+An empty array variable named SiteTagging is initialized.
+
+3. GET ILF items
+Items are retrieved from the SharePoint ILF list.
+
+4. Filter array
+ILF items are filtered on the ComponentLink URL.
+
+5. Condition
+If the filtered array is empty, the flow creates a new item, adds an attachment, and sends a response.
+If the filtered array is not empty, the flow sends a response that the item already exists.
+
+Result
+Same uniqueness rule as the original cross-site flow: one ComponentLink URL produces one ILF item. A second call for the same URL returns already-exists and does not create another item."
+Access Documents publicly,Automated,Processes document access and makes configured documents publicly accessible.,"Trigger: Manual HTTP request (POST).
+Initialize Variable: Sets up ""Docs Array"" as an empty array.
+Send HTTP Request to SharePoint: Gets data from SharePoint using a query item.
+Apply to Each: Loops through SharePoint results, fetches file content, and appends details to ""Docs Array"".
+Condition: Checks if siteUrl equals 'ghghghgh'. If true, processes another SharePoint request and responds with results.
+Final Response: Returns ""Docs Array"" as an image/jpeg.","Technical runtime path (Automated, HTTP POST)
+
+1. Trigger
+Manual HTTP POST.
+
+2. Initialize variable
+An array variable named ""Docs Array"" is initialized empty. File details are appended to it during the loop.
+
+3. HTTP request to SharePoint
+A Send HTTP request to SharePoint action gets the document data using the query item from the request.
+
+4. Apply to each
+The flow loops the SharePoint results. For each result it fetches the file content and appends the file details to Docs Array.
+
+5. Condition
+siteUrl is compared with the value 'ghghghgh'.
+- If equal: another SharePoint request is processed and the flow responds with those results.
+- The final response returns Docs Array with content type image/jpeg.
+
+Result
+The HTTP caller receives the collected document payload. The extra SharePoint request runs only when siteUrl is ghghghgh, and the closing response is Docs Array as image/jpeg."
+Download document publicly,Automated,Processes document download requests and provides configured documents for public download.,1.Trigger: Manual HTTP request (POST) 2.Get_file_content: Fetches file content from SharePoint 3.Compose: Processes the file content 4.Response: Returns the processed content,"Technical runtime path (Automated, HTTP POST)
+
+1. Trigger
+Manual HTTP POST. The request identifies the document to download.
+
+2. Get file content
+File content is fetched from SharePoint.
+
+3. Compose
+The file content is processed in a Compose action.
+
+4. Response
+The processed content is returned in the HTTP response to the caller.
+
+Result
+The public download endpoint returns the SharePoint file content. There is no list write, no permission change, and no Teams post in the documented steps."
+Under progress ILF to HHHH cross site task creatio...,Automated,Processes in-progress task creation from ILF to HHHH across SharePoint sites.,"Trigger: Manual HTTP request with a detailed schema for task data.
+Actions:
+Initializes a variable for SiteTagging.
+Composes and cleans Sitestagging data.
+Loops through Sitestagging array and appends to variable.
+Normalizes the payload for consistent data formatting.
+Cleans and normalizes feedback and component link URL.
+Retrieves ILF items from SharePoint.
+Filters items by ComponentLink URL.
+Checks if item exists; responds or creates new item accordingly.","Technical runtime path (Automated, HTTP). Flow name in the source is truncated. This is the in-progress ILF-to-HHHH cross-site task creation.
+
+1. Trigger
+Manual HTTP request. The request schema carries the task data.
+
+2. SiteTagging variable
+A variable for SiteTagging is initialized.
+
+3. Clean Sitestagging
+The Sitestagging data is composed and cleaned.
+
+4. Loop
+The flow loops the Sitestagging array and appends each value to the SiteTagging variable.
+
+5. Normalize payload
+The payload is normalized so the fields have a consistent format before the SharePoint calls.
+
+6. Clean links
+Feedback and the component link URL are cleaned and normalized.
+
+7. Get ILF items
+ILF items are retrieved from SharePoint.
+
+8. Filter
+Items are filtered by ComponentLink URL.
+
+9. Exists check
+If the item already exists, the flow responds accordingly. If it does not exist, the flow creates the new item.
+
+Result
+The in-progress cross-site path normalizes site tagging, feedback, and ComponentLink, then either creates the ILF item or returns the exists response. It does not create a duplicate for the same ComponentLink URL."
+EmployeeConcerns Permission ,Automated,apply the permission to the list EmployeeConerns List ,"Trigger: When a new item is created in your SharePoint list, the flow starts.
+Compose Actions: Extracts item details and the assigned user's email.
+Condition: Checks if the item is a folder. If not, the flow terminates.
+HTTP Requests: Breaks role inheritance, assigns HR and administrator roles, and ensures the assigned user exists.
+Apply to Each: Assigns multiple roles to the ensured user.
+Sequential Flow: Actions run in order based on the runAfter property.","Technical runtime path (Automated). Permission flow for the EmployeeConcerns list (source spelling: EmployeeConerns List).
+
+1. Trigger
+SharePoint ""When a new item is created"". One new item starts one permission run.
+
+2. Compose
+Compose actions extract:
+- the item details
+- the assigned user's email
+The email is the principal used in the later role assignment.
+
+3. Folder condition
+The flow checks whether the item is a folder.
+- If the item is not a folder, the flow terminates.
+- Permission changes continue only for a folder item.
+
+4. HTTP requests to SharePoint, in runAfter order
+- Break role inheritance on the item so unique permissions can be set.
+- Assign the HR role.
+- Assign the administrator role.
+- Ensure the assigned user exists as a SharePoint principal.
+
+5. Apply to each
+The flow loops the roles and assigns multiple roles to the user that was ensured in the previous step.
+
+6. Sequencing
+Each action runs only after the previous action succeeds, using the runAfter property. Role assignment does not start before inheritance is broken and the user is ensured.
+
+Result
+A new folder in EmployeeConcerns gets unique permissions. HR and Administrator are assigned, and the assigned user receives the looped roles. A non-folder item ends the flow with no permission change."
+Attandance and  Leave Request Permission ,Automated,apply the permission to the list leave request List and Attandance List,"Trigger: When an item is created or modified in SharePoint.
+Initial Compose: Gets item details and formats folder name.
+Scope_2: Extracts AssignedTo user email.
+Break Role Inheritance: Sends HTTP requests to SharePoint for Attendance and Leave Request folders.
+Role Assignments: Assigns HR, Administrator, and AssignedTo user permissions.
+Apply to Each: Loops through Approvers, ensures user exists, and assigns read permissions.
+Scopes: Used for grouping related actions and handling permissions.","Technical runtime path (Automated). Permission flow for the Attendance list and the Leave Request list. Flow name spelling in the source is ""Attandance and  Leave Request Permission"".
+
+1. Trigger
+SharePoint ""When an item is created or modified"". Both create and modify start a permission run. This is different from EmployeeConcerns Permission, which starts only on create.
+
+2. Initial Compose
+The flow reads the item details and formats the folder name. The formatted folder name identifies the Attendance folder and the Leave Request folder that will receive unique permissions.
+
+3. Scope_2
+Inside Scope_2 the AssignedTo user email is extracted. That email is the AssignedTo principal for the role assignment step.
+
+4. Break role inheritance
+HTTP requests are sent to SharePoint to break role inheritance on:
+- the Attendance folder
+- the Leave Request folder
+After this, permissions on those folders are unique and are no longer inherited from the parent list or library.
+
+5. Role assignments
+The HTTP role-assignment calls grant permissions to:
+- HR
+- Administrator
+- the AssignedTo user (email from Scope_2)
+
+6. Apply to each Approver
+The flow loops the Approvers collection.
+For each approver it:
+- ensures the user exists in SharePoint
+- assigns read permission to that user
+
+7. Scopes
+Scopes group the related permission actions so the Attendance break-inheritance, Leave Request break-inheritance, HR/Administrator/AssignedTo grants, and the Approvers read grant stay in one controlled sequence.
+
+Result
+When an Attendance or Leave Request item is created or modified, the matching folder stops inheriting permissions. HR, Administrator, and AssignedTo receive their assigned permissions. Each Approver is ensured and then given read access. The flow does not calculate attendance, does not build the leave report, and does not approve or reject the leave. Those are the separate scheduled report flows. This flow only applies list/folder permissions."
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "0ee29e66-10e2-4cb8-99c8-cab108e16635",
+  "alias": "KnowledgeRepositoryWebPartWebPart",
+  "componentType": "WebPart",
+
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2,
+
+  // If true, the component can only be installed on sites where Custom Script is allowed.
+  // Components that allow authors to embed arbitrary script code should set this to true.
+  // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "c0ffee00-1111-4222-8333-444455556666",
+    "group": { "default": "Knowledge Management Portal" },
+    "title": { "default": "Knowledge Repository" },
+    "description": { "default": "Filter, sort, and open knowledge articles." },
+    "officeFabricIconFontName": "ReadingMode",
+    "properties": {
+      "siteUrl": "https://holidaywiser.sharepoint.com/sites/KnowledgeManagementPortal",
+      "teamId": "",
+      "channelId": ""
+    }
+  }]
+}

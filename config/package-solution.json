@@ -1,0 +1,46 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "Knowledge Management Portal",
+    "id": "45f6dbff-f9de-4b03-aa09-ca17edb22f8c",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "webApiPermissionRequests": [
+      {
+        "resource": "Microsoft Graph",
+        "scope": "ChannelMessage.Send"
+      }
+    ],
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Knowledge Management Portal for Holidaywiser"
+      },
+      "longDescription": {
+        "default": "Knowledge repository, dashboard, Teams cards, and an assistant that answers only from SharePoint articles."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "knowledge-portal Feature",
+        "description": "The feature that activates elements of the knowledge-portal solution.",
+        "id": "ddc09e06-cf5e-4318-927b-10d201e69f3c",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/knowledge-portal.sppkg"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "knowledge-repository-web-part-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/knowledgeRepositoryWebPart/KnowledgeRepositoryWebPartWebPart.js",
+          "manifest": "./src/webparts/knowledgeRepositoryWebPart/KnowledgeRepositoryWebPartWebPart.manifest.json"
+        }
+      ]
+    },
+    "dashboard-repository-web-part-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/dashboardRepositoryWebPart/DashboardRepositoryWebPartWebPart.js",
+          "manifest": "./src/webparts/dashboardRepositoryWebPart/DashboardRepositoryWebPartWebPart.manifest.json"
+        }
+      ]
+    },
+    "knowledge-assistant-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/knowledgeAssistantWebPart/KnowledgeAssistantWebPartWebPart.js",
+          "manifest": "./src/webparts/knowledgeAssistantWebPart/KnowledgeAssistantWebPartWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {}
+}

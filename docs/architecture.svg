@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="780" viewBox="0 0 900 780">
+  <rect width="900" height="780" fill="#f4f8fc"/>
+  <text x="36" y="40" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#16315f">Knowledge Management Portal</text>
+  <text x="36" y="64" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#5c6b7c">SharePoint site, Teams cards, and the knowledge assistant.</text>
+  <rect x="36" y="88" width="400" height="190" rx="14" fill="#ffffff" stroke="#d5e4f5"/>
+  <text x="54" y="118" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#16315f">SPFx web parts</text>
+  <text x="54" y="146" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Dashboard Repository — home, KPIs, charts</text>
+  <text x="54" y="168" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Knowledge Repository — filter and sort</text>
+  <text x="54" y="190" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Knowledge Assistant — approved articles only</text>
+  <text x="54" y="222" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">React function components. REST. Separate bundles.</text>
+  <text x="54" y="244" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">Assistant code loads when Ask is opened.</text>
+  <rect x="464" y="88" width="400" height="190" rx="14" fill="#ffffff" stroke="#d5e4f5"/>
+  <text x="482" y="118" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#16315f">SharePoint lists</text>
+  <text x="482" y="146" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">KnowledgeArticles — 10 named articles</text>
+  <text x="482" y="168" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">ArticleAccessLog — person, date, and time</text>
+  <text x="482" y="200" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">The assistant only sees articles the</text>
+  <text x="482" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">signed-in user is allowed to read.</text>
+  <text x="482" y="244" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">Draft articles are not used as answers.</text>
+  <rect x="36" y="304" width="400" height="170" rx="14" fill="#ffffff" stroke="#d5e4f5"/>
+  <text x="54" y="334" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#16315f">Microsoft Teams</text>
+  <text x="54" y="362" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Adaptive card: new article announcement</text>
+  <text x="54" y="384" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Adaptive card: approval request</text>
+  <text x="54" y="416" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">Microsoft Graph ChannelMessage.Send</text>
+  <text x="54" y="438" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">as the signed-in user. Cards link to the article.</text>
+  <rect x="464" y="304" width="400" height="170" rx="14" fill="#ffffff" stroke="#d5e4f5"/>
+  <text x="482" y="334" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#16315f">Not in this delivery</text>
+  <text x="482" y="362" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Power Apps admin module</text>
+  <text x="482" y="384" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">Power Automate approval and email flows</text>
+  <text x="482" y="416" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">Those steps were left out on purpose.</text>
+  <text x="482" y="438" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#5c6b7c">Teams cards are posted with Graph instead.</text>
+  <path d="M436 180 H464" stroke="#1f4e9d" stroke-width="2"/>
+  <path d="M236 278 V304" stroke="#1f4e9d" stroke-width="2"/>
+  <path d="M664 278 V304" stroke="#1f4e9d" stroke-width="2"/>
+  <rect x="36" y="500" width="828" height="248" rx="14" fill="#ffffff" stroke="#d5e4f5"/>
+  <text x="54" y="532" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#16315f">Data flow</text>
+  <text x="54" y="564" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">1. Dashboard writes the 10 sample articles into KnowledgeArticles.</text>
+  <text x="54" y="588" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">2. A new article posts one Teams announcement card when team and channel are set.</text>
+  <text x="54" y="612" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">3. Opening an article writes the person, category, and time into ArticleAccessLog.</text>
+  <text x="54" y="636" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">4. Request approval posts an adaptive card that links back to the article.</text>
+  <text x="54" y="660" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">5. The assistant scores the question against approved articles only.</text>
+  <text x="54" y="684" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">6. The answer includes the source, section, last updated date, and confidence.</text>
+  <text x="54" y="716" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#243044">7. No public internet lookup. Permissions follow the SharePoint list read.</text>
+</svg>

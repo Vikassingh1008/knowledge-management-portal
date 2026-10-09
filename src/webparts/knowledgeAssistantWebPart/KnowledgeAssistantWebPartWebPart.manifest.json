@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "a7c3e1d4-8b20-4f55-9c61-2d4e6f8a0b13",
+  "alias": "KnowledgeAssistantWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [{
+    "groupId": "c0ffee00-1111-4222-8333-444455556666",
+    "group": { "default": "Knowledge Management Portal" },
+    "title": { "default": "Knowledge Assistant" },
+    "description": { "default": "Answers from approved SharePoint articles only, with a source and confidence score." },
+    "officeFabricIconFontName": "Chat",
+    "properties": {
+      "siteUrl": "https://holidaywiser.sharepoint.com/sites/KnowledgeManagementPortal",
+      "teamId": "",
+      "channelId": ""
+    }
+  }]
+}
